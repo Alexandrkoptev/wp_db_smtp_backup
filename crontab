@@ -1,0 +1,10 @@
+MYSQL_DATABASE=knowledge
+MYSQL_USER=knowledge
+MYSQL_PASSWORD=secret
+TIMESTAMP=$(date +'%Y%m%d')
+
+* * * * * root /root/sqldump_mailsend.sh >> /var/log/cron.log 2>&1
+
+#* * * * * echo "Hello world" >> /var/log/cron.log 2>&1
+#* * * * * * root /root/sqldump_mailsend.sh >> /var/log/cron.log 2>&1
+

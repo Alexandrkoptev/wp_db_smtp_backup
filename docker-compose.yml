@@ -1,0 +1,91 @@
+
+version: '2.1'
+
+# Connect to Traefik network (if using)
+networks:
+  default:
+    external:
+      name: traefik_webgateway
+
+services:
+  knowledge.onix.kr.ua:
+    depends_on:
+      - db
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    hostname: knowledge.onix.kr.ua
+    restart: unless-stopped
+    tty: true
+    mem_limit: 512MB
+    environment:
+      WORDPRESS_DB_HOST: ${DB_HOSTNAME:-db}
+      WORDPRESS_DB_USER: ${MYSQL_USER:-dbuser}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-dbpassword}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-dbname}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDRPESS_DEBUG: ${WORDRPESS_DEBUG:-1}
+      TZ: Europe/Kiev
+    volumes:
+      - ./wp-content/:/var/www/html/wp-content/
+    labels:
+      # Labels for Traefik discovering
+      - "traefik.enable=true"
+      - "traefik.backend=knowledge.onix.kr.ua"
+      - "traefik.frontend.rule=Host:knowledge.onix.kr.ua, knowledge.onix.kr.ua"
+      #- "traefik.frontend.redirect.regex=^http://knowledge.onix.kr.ua/(.*)"
+      #- "traefik.frontend.redirect.replacement=https://knowledge.onix.kr.ua/$$1"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5M"
+        max-file: "3"
+
+  db:
+    image: mysql:5.6
+    volumes:
+     - ./mysql/mysql_data:/var/lib/mysql
+     - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-dbname}
+      MYSQL_USER: ${MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-dbpassword}
+    mem_limit: 1024MB
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5M"
+        max-file: "3"
+
+  smtp-local:
+    image: tianon/exim4
+    restart: unless-stopped
+    mem_limit: 256MB
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "5"
+
+  backup-local:
+    build:
+      dockerfile: Dockerfile-backup
+      context: ./
+    volumes:
+     - ./sqldb_dump:/sqldb_dump/
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-dbname}
+      MYSQL_USER: ${MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-dbpassword}
+    restart: unless-stopped
+    mem_limit: 256MB
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "5"

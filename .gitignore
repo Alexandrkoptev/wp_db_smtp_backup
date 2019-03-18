@@ -1,0 +1,15 @@
+# Ignore everything
+*
+!*/
+
+# But not onix theme, plugins, etc
+!/.gitignore
+!/README.md
+!/Dockerfile
+!/docker-compose.yml
+!/.env.default
+!/crontab
+!/Dockerfile-backup
+!/sqldump_mailsend.sh
+!/ssmtp.conf
+
