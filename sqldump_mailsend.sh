@@ -9,4 +9,9 @@ gzip -rmf /sqldb_dump/dump${TIMESTAMP}.sql
 mpack -s"" -d /sqldb_dump/dump*.gz alexandr.koptev@gmail.com
 #mv /sqldb_dump/db_dump.sql.gz /sqldb_dump/db_dump.sql-old.gz
 mv /sqldb_dump/dump*.gz /sqldb_dump/db_dump.sql-old.gz
+tar zcvf /sqldb_dump/wp-content${TIMESTAMP}.tar /wp-content
+sleep 10
+mpack -s"" -d /sqldb_dump/wp-content*.tar alexandr.koptev@gmail.com
+sleep 5
+mv /sqldb_dump/wp-content${TIMESTAMP}.tar /sqldb_dump/wp-content-old.tar
 

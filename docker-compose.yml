@@ -76,6 +76,7 @@ services:
       context: ./
     volumes:
      - ./sqldb_dump:/sqldb_dump/
+     - ./wp-content:/wp-content/:ro
     tty: true
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
