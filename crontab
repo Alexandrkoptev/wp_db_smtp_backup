@@ -2,6 +2,7 @@ MYSQL_DATABASE=knowledge
 MYSQL_USER=knowledge
 MYSQL_PASSWORD=secret
 TIMESTAMP=$(date +'%Y%m%d')
+destmail=alexandr.koptev@gmail.com
 
 */5 * * * * root /root/sqldump_mailsend.sh >> /var/log/cron.log 2>&1
 
